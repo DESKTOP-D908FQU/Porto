@@ -9,7 +9,8 @@ namespace Porto.Api
 {
     using Microsoft.EntityFrameworkCore;
     using NSwag.AspNetCore;
-    using Porto.Api.Data;
+    using Porto.Api.Database.Context;
+    using Porto.Api.Models;
     using Porto.Api.Options;
 
     public class Startup
@@ -28,6 +29,9 @@ namespace Porto.Api
             services.AddDbContext<ProtoDbContext>(options =>
                 options.UseNpgsql(
                     Configuration.GetConnectionString(ProtoDbContext.Position)));
+
+            services.AddIdentity<User, Role>()
+                .AddEntityFrameworkStores<ProtoDbContext>();
 
             services.AddControllers();
 
