@@ -7,7 +7,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace Porto.Api
 {
+    using Microsoft.EntityFrameworkCore;
     using NSwag.AspNetCore;
+    using Porto.Api.Data;
     using Porto.Api.Options;
 
     public class Startup
@@ -22,6 +24,10 @@ namespace Porto.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
+
+            services.AddDbContext<ProtoDbContext>(options =>
+                options.UseNpgsql(
+                    Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddControllers();
 
