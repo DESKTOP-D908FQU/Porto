@@ -3,18 +3,22 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Porto.Api.Models
 {
-    public class Role : IdentityRole<long>, IEntity<long>
+    public class Role : IdentityRole<long>, IEntityWithTypedId<long>, IEntityDate, IEntityEnabled, IEntityDeleted
     {
         public Role()
         {
-            CreatedAt = DateTime.Now.ToUniversalTime();
-            UpdatedAt = DateTime.Now.ToUniversalTime();
+            var currentTime = DateTimeOffset.Now;
+
+            CreatedAt = CreatedAt == default ? currentTime : CreatedAt;
+            UpdatedAt = UpdatedAt == default ? currentTime : UpdatedAt;
         }
 
+        public DateTimeOffset CreatedAt { get; set; }
+
+        public DateTimeOffset UpdatedAt { get; set; }
+
+        public bool Enabled { get; set; }
+
         public bool IsDeleted { get; set; }
-
-        public DateTime CreatedAt { get; set; }
-
-        public DateTime UpdatedAt { get; set; }
     }
 }
