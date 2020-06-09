@@ -27,7 +27,7 @@ namespace Porto.Api
 
             services.AddDbContext<ProtoDbContext>(options =>
                 options.UseNpgsql(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString(ProtoDbContext.Position)));
 
             services.AddControllers();
 
