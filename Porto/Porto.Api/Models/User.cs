@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 namespace Porto.Api.Models
@@ -12,6 +13,8 @@ namespace Porto.Api.Models
             CreatedAt = CreatedAt == default ? currentTime : CreatedAt;
             UpdatedAt = UpdatedAt == default ? currentTime : UpdatedAt;
         }
+
+        public virtual ICollection<UserRole> UserRoles { get; set; }
 
         public DateTimeOffset CreatedAt { get; set; }
 

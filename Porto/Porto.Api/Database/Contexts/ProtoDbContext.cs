@@ -27,6 +27,7 @@ namespace Porto.Api.Database.Contexts
             modelBuilder.ApplyConfiguration(new IdentityUserRoleEntityConfiguration());
             modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
             modelBuilder.ApplyConfiguration(new RoleEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRoleEntityConfiguration());
         }
     }
 }
