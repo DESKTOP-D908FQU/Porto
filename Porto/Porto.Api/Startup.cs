@@ -9,7 +9,7 @@ namespace Porto.Api
 {
     using Microsoft.EntityFrameworkCore;
     using NSwag.AspNetCore;
-    using Porto.Api.Database.Context;
+    using Porto.Api.Database.Contexts;
     using Porto.Api.Models;
     using Porto.Api.Options;
 

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Porto.Api.Models;
 
-namespace Porto.Api.Database.Context
+namespace Porto.Api.Database.Contexts
 {
     public class ProtoDbContext : IdentityDbContext<User, Role, long>
     {
@@ -17,6 +17,7 @@ namespace Porto.Api.Database.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new IdentityUserEntityConfiguration());
         }
     }
 }
