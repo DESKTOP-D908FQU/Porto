@@ -8,7 +8,7 @@ namespace Porto.Api.Database.Contexts.EntityConfigurations.Identities
     {
         public void Configure(EntityTypeBuilder<IdentityUser<long>> builder)
         {
-            builder.HasKey(u => u.Id);
+            builder.HasKey(c => c.Id);
         }
     }
 }
