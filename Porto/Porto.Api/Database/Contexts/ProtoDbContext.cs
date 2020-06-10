@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Porto.Api.Database.Contexts.EntityConfigurations;
 using Porto.Api.Models;
 
 namespace Porto.Api.Database.Contexts
@@ -17,7 +18,9 @@ namespace Porto.Api.Database.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.ApplyConfiguration(new IdentityUserEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new IdentityRoleEntityConfiguration());
         }
     }
 }
