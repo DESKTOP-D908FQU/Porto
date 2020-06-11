@@ -7,6 +7,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace Porto.Api
 {
+    using HealthChecks.UI.Client;
+    using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.EntityFrameworkCore;
     using NSwag.AspNetCore;
     using Porto.Api.Database.Contexts;
@@ -28,16 +31,16 @@ namespace Porto.Api
         {
             services.AddOptions();
 
+            var connectionString = Configuration.GetConnectionString(ProtoDbContext.Position);
             services.AddDbContext<ProtoDbContext>(options =>
-                options.UseNpgsql(
-                    Configuration.GetConnectionString(ProtoDbContext.Position)));
+                options.UseNpgsql(connectionString));
 
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<ProtoDbContext>();
 
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddControllers();
 
@@ -73,6 +76,12 @@ namespace Porto.Api
                     document.Info.Contact = apiSwaggerOptions.Contact;
                 };
             });
+
+            services.AddHealthChecks()
+                .AddNpgSql(
+                    connectionString,
+                    name: "Proto-check",
+                    tags: new[] { "db", "sql", "postgres", "npgsql" });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionProvider)
@@ -96,6 +105,12 @@ namespace Porto.Api
                 {
                     options.SwaggerRoutes.Add(new SwaggerUi3Route($"{description.GroupName}", $"/swagger/{description.GroupName}/swagger.json"));
                 }
+            });
+
+            app.UseHealthChecks(new PathString("/hc"), new HealthCheckOptions
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
             });
         }
     }

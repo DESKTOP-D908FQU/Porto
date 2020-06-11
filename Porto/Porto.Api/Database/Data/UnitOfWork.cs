@@ -2,35 +2,57 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Porto.Api.Database.Contexts;
 
 namespace Porto.Api.Database.Data
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IUnitOfWork<ProtoDbContext>
     {
-        int SaveChanges();
+    }
+
+    public class UnitOfWork : UnitOfWork<ProtoDbContext>, IUnitOfWork, IDisposable
+    {
+        public UnitOfWork(ProtoDbContext dbContext) 
+            : base(dbContext)
+        {
+        }
+    }
+
+    public interface IUnitOfWork<TContext> : IDisposable
+        where TContext : DbContext
+    {
+        int Commit();
+
+        Task<int> CommitAsync();
 
         IDbContextTransaction BeginTransaction();
     }
 
-    public class UnitOfWork : IUnitOfWork, IDisposable
+    public class UnitOfWork<TContext> : IUnitOfWork<TContext>
+        where TContext : DbContext
     {
-        private readonly ProtoDbContext _context;
-
-        public UnitOfWork(ProtoDbContext context)
+        public UnitOfWork(TContext context)
         {
-            _context = context;
+            DbContext = context;
         }
 
-        public int SaveChanges()
+        public TContext DbContext { get; }
+
+        public virtual int Commit()
         {
-            return _context.SaveChanges();
+            return DbContext.SaveChanges();
+        }
+
+        public virtual Task<int> CommitAsync()
+        {
+            return DbContext.SaveChangesAsync();
         }
 
         public IDbContextTransaction BeginTransaction()
         {
-            return _context.Database.BeginTransaction();
+            return DbContext.Database.BeginTransaction();
         }
 
         private bool _disposed = false;
@@ -52,7 +74,7 @@ namespace Porto.Api.Database.Data
 
             if (disposing)
             {
-                _context.Dispose();
+                DbContext?.Dispose();
             }
 
             _disposed = true;
