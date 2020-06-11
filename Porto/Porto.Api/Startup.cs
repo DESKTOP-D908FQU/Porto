@@ -10,6 +10,7 @@ namespace Porto.Api
     using Microsoft.EntityFrameworkCore;
     using NSwag.AspNetCore;
     using Porto.Api.Database.Contexts;
+    using Porto.Api.Database.Data;
     using Porto.Api.Database.Repositories;
     using Porto.Api.Models;
     using Porto.Api.Options;
@@ -34,6 +35,7 @@ namespace Porto.Api
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<ProtoDbContext>();
 
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
 
