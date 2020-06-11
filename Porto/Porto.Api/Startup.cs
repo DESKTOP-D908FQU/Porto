@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,9 +11,6 @@ using Microsoft.Extensions.Hosting;
 namespace Porto.Api
 {
     using HealthChecks.UI.Client;
-    using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.EntityFrameworkCore;
     using NSwag.AspNetCore;
     using Porto.Api.Database.Contexts;
     using Porto.Api.Database.Data;
@@ -82,6 +82,11 @@ namespace Porto.Api
                     connectionString,
                     name: "Proto-check",
                     tags: new[] { "db", "sql", "postgres", "npgsql" });
+            services.AddHealthChecksUI(options =>
+            {
+                options.MaximumHistoryEntriesPerEndpoint(50);
+            })
+            .AddPostgreSqlStorage(connectionString);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionProvider)
@@ -112,6 +117,11 @@ namespace Porto.Api
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
             });
+            app.UseHealthChecksUI(options =>
+            {
+                options.UIPath = "/hc-ui";
+            });
+            app.UseHealthChecksPrometheusExporter("/hc-metrics");
         }
     }
 }
