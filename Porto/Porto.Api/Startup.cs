@@ -11,6 +11,8 @@ using Microsoft.Extensions.Hosting;
 namespace Porto.Api
 {
     using HealthChecks.UI.Client;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.IdentityModel.Tokens;
     using NSwag.AspNetCore;
     using Porto.Api.Database.Contexts;
     using Porto.Api.Database.Data;
@@ -43,6 +45,14 @@ namespace Porto.Api
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddControllers();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        var apiAuthOptions = Configuration.GetSection(ApiAuthOptions.Position).Get<ApiAuthOptions>();
+                        options.RequireHttpsMetadata = false;
+                        options.TokenValidationParameters = apiAuthOptions.TokenValidationParameters;
+                    });
 
             var apiVersionOptions = Configuration.GetSection(ApiVersionOptions.Position).Get<ApiVersionOptions>();
             services.AddApiVersioning(options =>
